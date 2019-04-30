@@ -34,7 +34,10 @@ bleno.on('advertisingStart', function (error) {
                         uuid: settings.characteristic_id,
                         properties: ['write'],
                         onWriteRequest: function (data, offset, withoutResponse, callback) {
-                            console.log('Writing');
+                            data = Buffer.from(data, 'base64').toString();
+			    console.log(data);
+			    data = JSON.parse(data);
+			    console.log(data);
                             // next: add code for processing write request
                         }
                     })
