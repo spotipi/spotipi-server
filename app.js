@@ -68,25 +68,25 @@ bleno.on('advertisingStart', function (error) {
                             const companionData = JSON.parse(decoded);
                             console.log('TCL: companionData', companionData);
                             const tracks = companionData.tracks;
-                            fs.readdir(directory, (err, files) => {
-                                const existing = fs.readdirSync(playlistDir)
-                                for (const file of existing) {
-                                    fs.unlinkSync(path.join(playlistDir, file));
-                                }
-                                Promise.all(tracks.map(async track => {
-                                    const response = await axios({
-                                        method: 'get',
-                                        url: track.url,
-                                        responseType: 'stream'
-                                    });
-                                    response.data.pipe(fs.createWriteStream(`${playlistDir}/${track.name}.mp3`))
-                                })).then(() => {
-                                    const alarm = companionData.alarmTime;
-                                    alarmJob.reschedule(`* ${alarm.minute} ${alarm.hour} * * *`)
-                                    initialJob = false;
-                                })
+
+                            const existing = fs.readdirSync(playlistDir)
+                            for (const file of existing) {
+                                fs.unlinkSync(path.join(playlistDir, file));
                             }
-                    })
+                            Promise.all(tracks.map(async track => {
+                                const response = await axios({
+                                    method: 'get',
+                                    url: track.url,
+                                    responseType: 'stream'
+                                });
+                                response.data.pipe(fs.createWriteStream(`${playlistDir}/${track.name}.mp3`))
+                            })).then(() => {
+                                const alarm = companionData.alarmTime;
+                                alarmJob.reschedule(`* ${alarm.minute} ${alarm.hour} * * *`)
+                                initialJob = false;
+                            })
+                        }
+                    }),
                 ]
             })
         ]);
