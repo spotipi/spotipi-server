@@ -1,4 +1,5 @@
 const fs = require('fs');
+const base64 = require('react-native-base64');
 const path = require('path')
 const axios = require('axios');
 const player = require('play-sound')(opts = {});
@@ -64,9 +65,10 @@ bleno.on('advertisingStart', function (error) {
                         properties: ['write'],
                         onWriteRequest: function (data, offset, withoutResponse, callback) {
                             console.log('Writing');
-                            const decoded = Buffer.from(data, 'base64').toString();
+                            const decoded = base64.decode(data)
                             console.log('TCL: decoded', decoded);
-                            // const companionData = JSON.parse(decoded);
+                            const companionData = JSON.parse(decoded);
+                            console.log('TCL: companionData', companionData);
                             // console.log('TCL: companionData', companionData);
                             // const tracks = companionData.tracks;
 
