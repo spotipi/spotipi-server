@@ -92,6 +92,9 @@ function addBlenoListeners() {
     bleno.on('accept', function (clientAddress) {
         console.log('Connected to client address: ', clientAddress);
     });
+    bleno.on('advertisingStop', () => {
+        console.log('Stopping...', bleno.address, bleno.platform);
+    });
     bleno.on('disconnect', (clientAddress) => {
         console.log('Disconnected from client address: ', clientAddress);
     });
