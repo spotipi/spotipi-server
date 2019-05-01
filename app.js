@@ -64,7 +64,7 @@ bleno.on('advertisingStart', function (error) {
                         properties: ['write'],
                         onWriteRequest: function (data, offset, withoutResponse, callback) {
                             console.log('Writing');
-                            const companionData = JSON.stringify(data.toString())
+                            const companionData = JSON.parse(data.toString())
                             console.log('TCL: companionData', companionData);
                             // const tracks = companionData.tracks;
 
