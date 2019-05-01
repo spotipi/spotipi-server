@@ -1,5 +1,4 @@
 const fs = require('fs');
-const base64 = require('react-native-base64');
 const path = require('path')
 const axios = require('axios');
 const player = require('play-sound')(opts = {});
