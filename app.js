@@ -65,7 +65,7 @@ bleno.on('advertisingStart', function (error) {
                         properties: ['write'],
                         onWriteRequest: function (data, offset, withoutResponse, callback) {
                             console.log('Writing');
-                            const decoded = base64.decode(data)
+                            const decoded = Buffer.from(data, 'base64').toString('utf8')
                             console.log('TCL: decoded', decoded);
                             const companionData = JSON.parse(decoded);
                             console.log('TCL: companionData', companionData);
