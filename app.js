@@ -63,27 +63,29 @@ bleno.on('advertisingStart', function (error) {
                         uuid: settings.characteristic_id,
                         properties: ['write'],
                         onWriteRequest: function (data, offset, withoutResponse, callback) {
-                            console.log('Writing');
                             const companionData = JSON.parse(data.toString())
                             console.log('TCL: companionData', companionData);
-                            // const tracks = companionData.tracks;
+                            const tracks = companionData.tracks;
+                            const existing = fs.readdirSync(playlistDir)
+                            for (const file of existing) {
+                                fs.unlinkSync(path.join(playlistDir, file));
+                            }
+                            Promise.all(tracks.map(async track => {
+                                const response = await axios({
+                                    method: 'get',
+                                    url: track.url,
+                                    responseType: 'stream'
+                                });
+                                response.data.pipe(fs.createWriteStream(`${playlistDir}/${track.name}.mp3`))
+                            })).then(() => {
+                                const alarm = companionData.alarmTime;
+                                alarmJob.reschedule(`${alarm.minute} ${alarm.hour} * * *`)
+                                initialJob = false;
+                                callback(this.RESULT_SUCCESS);
+                            }).catch(e => {
+                                console.log('TCL: e', e);
 
-                            // const existing = fs.readdirSync(playlistDir)
-                            // for (const file of existing) {
-                            //     fs.unlinkSync(path.join(playlistDir, file));
-                            // }
-                            // Promise.all(tracks.map(async track => {
-                            //     const response = await axios({
-                            //         method: 'get',
-                            //         url: track.url,
-                            //         responseType: 'stream'
-                            //     });
-                            //     response.data.pipe(fs.createWriteStream(`${playlistDir}/${track.name}.mp3`))
-                            // })).then(() => {
-                            //     const alarm = companionData.alarmTime;
-                            //     alarmJob.reschedule(`* ${alarm.minute} ${alarm.hour} * * *`)
-                            //     initialJob = false;
-                            // })
+                            })
                         }
                     }),
                 ]
